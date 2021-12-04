@@ -8,7 +8,7 @@
  *  UTEID: aks4562
  *  email address: anushkashah654@gmail.com
  *  TA name: Grace
- *  Number of slip days I am using: 0
+ *  Number of slip days I am using: 2
  */
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     private int size;
 
     /**
-     * Create an empty BinarySearchTree
+     * Create an empty Binary Search Tree
      */
     public BinarySearchTree() {
     	root = null;
@@ -38,6 +38,7 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
 
     /**
+     * 	Adapted from Mike's code on adding to a Binary Search Tree
      *  Add the specified item to this Binary Search Tree if it is not already present.
      *  <br>
      *  pre: <tt>value</tt> != null<br>
@@ -54,30 +55,36 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
        	}
     	int oldSize = size;
     	root = addVal(root, value);
+    	// returns true if the new size has changed
     	return size != oldSize;
     }
     
     /**
-     * 
-     * @param node
-     * @param value
-     * @return
+     * Adds a value to a Binary Search Tree if it is not present
+     * @param node the current node in the Binary Search Tree
+     * @param value the value needed to add to Binary Search Tree
+     * @return the BSTNode<E> node
      */
     private BSTNode<E> addVal(BSTNode<E> node, E value) {
     	if (node == null) {
     		size++;
+    		// create a new node with the data as value
     		return new BSTNode<E>(value);
     	}
+    	// compare value and data in node
     	int temp = value.compareTo(node.getData());
     	if (temp < 0) {
+    		// value is less than data, make recursive call with left subtree
     		node.setLeft(addVal(node.getLeft(), value));
     	} else if (temp > 0) {
+    		// value is greater than data, make recursive call with right subtree
     		node.setRight(addVal(node.getRight(), value));
     	}
     	return node;
     }
 
     /**
+     * 	Adapted from Mike's code on removing from a Binary Search Tree
      *  Remove a specified item from this Binary Search Tree if it is present.
      *  <br>
      *  pre: <tt>value</tt> != null<br>
@@ -94,34 +101,45 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
        	}
     	int oldSize = size;
     	root = removeVal(root, value);
+    	// returns true if the new size has changed
     	return size != oldSize;
     }
     
     /**
-     * 
-     * @param node
-     * @param value
-     * @return
+     * Removes a value from the Binary Search Tree if it is present
+     * @param node the current node in the Binary Search Tree
+     * @param value the value needed to add to Binary Search Tree
+     * @return the BSTNode<E> node
      */
     private BSTNode<E> removeVal(BSTNode<E> node, E value) {
     	if (node == null) {
+    		// value is node present, fall out of tree
     		return null;
     	}
+    	// recursive case
     	int temp = value.compareTo(node.getData());
     	if (temp < 0) {
+    		// if value is present, it is in left subtree of node
     		node.setLeft(removeVal(node.getLeft(), value));
     	} else if (temp > 0) {
+    		// if value is present, it is in the right subtree of node
     		node.setRight(removeVal(node.getRight(), value));
     	} else {
+    		// data in node is essentially equal to value
     		size--;
     		if (node.getLeft() == null && node.getRight() == null) {
+    			// node is a leaf
     			node = null;
     		} else if (node.getRight() == null) {
+    			// single child to the left
     			node = node.getLeft();
     		} else if (node.getLeft() == null) {
+    			// single child to the right
     			node = node.getRight();
     		} else {
-    			E maxLeft = max(node.getLeft());
+    			// value is a node with two children
+    			E maxLeft = getMax(node.getLeft());
+    			// replace value with max of left subtree
     			node.setData(maxLeft);
     			node.setLeft(removeVal(node.getLeft(), maxLeft));
     			size++;
@@ -131,12 +149,13 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
     
     /**
-     * 
-     * @param node
-     * @return
+     * Finds the max value in the Binary Search Tree
+     * @param node root of the Binary Search Tree
+     * @return max value of Binary Search Tree
      */
-    private E max(BSTNode<E> node) {
+    private E getMax(BSTNode<E> node) {
     	while (node.getRight() != null) {
+    		// find the rightmost node
     		node = node.getRight();
     	}
     	return node.getData();
@@ -159,19 +178,22 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
     
     /**
-     * 
-     * @param node
-     * @param value
-     * @return
+     * Checks if a value is present in a Binary Search Tree
+     * @param node the current node in the Binary Search Tree
+     * @param value the value to check if is present in Binary Search Tree
+     * @return true if value is present, false otherwise
      */
     private boolean hasVal(BSTNode<E> node, E value) {
     	if (node == null) {
     		return false;
     	} else if (value.compareTo(node.getData()) == 0) {
+    		// value equals data in node
     		return true;
     	} else if (value.compareTo(node.getData()) > 0) {
+    		// value is greater than data in node, recursive call with right subtree
     		return hasVal(node.getRight(), value);
     	} 
+    	// else value is less than data in node, recursive call with left subtree
     	return hasVal(node.getLeft(), value);
     }
 
@@ -187,6 +209,7 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
 
     /**
+     * 	Adapted from Mike's code on getting the height of a Binary Search Tree
      *  return the height of this Binary Search Tree.
      *  <br>
      *  pre: none<br>
@@ -200,14 +223,15 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
     
     /**
-     * 
-     * @param node
-     * @return
+     * Find the height of a Binary Search Tree
+     * @param node the current node in the Binary Search Tree
+     * @return height of the Binary Search Tree
      */
     private int getHeight(BSTNode<E> node) {
     	if (node == null) {
     		return -1;
     	}
+    	// find deepest leaf with recursive call
     	return 1 + Math.max(getHeight(node.getLeft()), getHeight(node.getRight()));
     }
 
@@ -227,14 +251,16 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
     
     /**
-     * 
-     * @param node
-     * @param tree
+     * Get all the data from a Binary Search Tree in ascending order
+     * @param node the current node in the Binary Search Tree
+     * @param tree empty list that data from each node gets added to 
      */
     private void getTree(BSTNode<E> node, List<E> tree) {
 		if (node != null) {
+			// recursive call with left subtree
 			getTree(node.getLeft(), tree);
 			tree.add(node.getData());
+			// recursive call with right subtree
 			getTree(node.getRight(), tree);
 		}
 	}
@@ -247,23 +273,11 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
      * @return the maximum value in this tree
      */
     public E max() {
-    	if (size() < 0) {
+    	if (size() <= 0) {
             throw new IllegalArgumentException("Violation of precondition: " +
-                    "max. size() cannot be less than 0."); 
+                    "max. size() cannot be less than or equal to 0."); 
        	}
         return getMax(root);
-    }
-    
-    /**
-     * 
-     * @param node
-     * @return
-     */
-    private E getMax(BSTNode<E> node) {
-    	if (node.getRight() == null) {
-    		return node.getData();
-    	}
-    	return getMax(node.getRight());
     }
 
     /**
@@ -274,22 +288,23 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
      * @return the minimum value in this tree
      */
     public E min() {
-    	if (size() < 0) {
+    	if (size() <= 0) {
             throw new IllegalArgumentException("Violation of precondition: " +
-                    "min. size() cannot be less than 0."); 
+                    "min. size() cannot be less than or equal to 0."); 
        	}
         return getMin(root);
     }
     
     /**
-     * 
-     * @param node
-     * @return
+     * Find the minimum element in this Binary Search Tree
+     * @param node the current node in the Binary Search Tree
+     * @return the minimum value in the Binary Search Tree
      */
     private E getMin(BSTNode<E> node) {
     	if (node.getLeft() == null) {
     		return node.getData();
     	}
+    	// make recursive call with left subtree
     	return getMin(node.getLeft());
     }
 
@@ -308,26 +323,34 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
             throw new IllegalArgumentException("Violation of precondition: " +
                     "iterativeAdd. data cannot be null."); 
        	}
+    	// set pointers to current node and previous node
 		BSTNode<E> prev = null;
     	BSTNode<E> curr = root;
     	BSTNode<E> node = new BSTNode<E>(data);
 		while (curr != null) {
+			// set prev to curr
 			prev = curr;
 			if (data.compareTo(curr.getData()) == 0) {
+				// data is already present in tree
 				return false;
 			} else if (data.compareTo(curr.getData()) < 0) {
+				// data is on left subtree
 				curr = curr.getLeft();
 			} else {
+				// data is on right subtree
 				curr = curr.getRight();
 			}
 		}
 		if (prev == null) {
 			root = node;
 		} else if (data.compareTo(prev.getData()) < 0) {
+			// add node to left of prev
 			prev.setLeft(node);
 		} else {
+			// add node to right of prev
 			prev.setRight(node);
 		}
+		// increase size
 		size++;
 		return true;
     }
@@ -350,22 +373,26 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
     
     /**
-     * 
-     * @param node
-     * @param kth
-     * @param count
-     * @return
+     * Get the "kth" element in this Binary Search Tree
+     * @param node the current node in the Binary Search Tree
+     * @param kth the element number that needs to be returned
+     * @param count array to keep track of position
+     * @return value at the "kth" element
      */
     private E getHelp(BSTNode<E> node, int kth, int[] count) {
     	if (node != null) {
+    		// make recursive call with left subtree
     		E left = getHelp(node.getLeft(), kth, count);
     		if (left != null) {
     			return left;
     		}
+    		// check if this node is the kth node
     		if (kth == count[0]) {
     			return node.getData();
     		}
+    		// increment count[0]
     		count[0]++;
+    		// make recursive call with right subtree
     		E right = getHelp(node.getRight(), kth, count);
     		if (right != null) {
     			return right;
@@ -393,17 +420,20 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
     
     /**
-     * 
-     * @param value
-     * @param res
-     * @param node
-     * @return
+     * Get a list with all values in this Binary Search Tree less than value
+     * @param value the cutoff value
+     * @param res ArrayList with all values in this Binary Search Tree less than value
+     * @param node the current node in the Binary Search Tree
+     * @return a list with all values in this tree that are less than value
      */
     private List<E> lessThanHelp(E value, ArrayList<E> res, BSTNode<E> node) {
     	if (node != null) {
+    		// make recursive call with left subtree
     		lessThanHelp(value, res, node.getLeft());
+    		// if data of node is less than value, add to res
     		if (value.compareTo(node.getData()) > 0) {
     			res.add(node.getData());
+    			// only make recursive call with right subtree if node data is less than value
     			lessThanHelp(value, res, node.getRight());
     		}
     	}
@@ -429,17 +459,20 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
     
     /**
-     * 
-     * @param value
-     * @param res
-     * @param node
-     * @return
+     * Get a list with all values in this Binary Search Tree greater than value
+     * @param value the cutoff value
+     * @param res ArrayList with all values in this Binary Search Tree greater than value
+     * @param node the current node in the Binary Search Tree
+     * @return a list with all values in this tree that are greater than value
      */
     private List<E> greaterThanHelp(E value, LinkedList<E> res, BSTNode<E> node) {
     	if (node != null) {
+    		// make recursive call with right subtree
     		greaterThanHelp(value, res, node.getRight());
+    		// if data of node is greater than value, add to res
     		if (value.compareTo(node.getData()) < 0) {
     			res.addFirst(node.getData());
+    			// only make recursive call with left subtree if node data is greater than value
     			greaterThanHelp(value, res, node.getLeft());
     		}
     	}
@@ -458,18 +491,20 @@ public class BinarySearchTree<E extends Comparable<? super E>> {
     }
     
     /**
-     * 
-     * @param d
-     * @param count
-     * @param node
-     * @return
+     * Find the number of nodes in this Binary Search Tree at a certain depth
+     * @param d the target depth
+     * @param count number of nodes at target depth
+     * @param node the current node in the Binary Search Tree
+     * @return the number of nodes at target depth
      */
     private int findNodes(int d, int count, BSTNode<E> node) {
-    	if (d == 0) {
-    		return count + 1;
-    	} else if (node == null) {
+    	if (node == null) {
     		return 0;
+    	} else if (d == 0) {
+    		// at target depth, increase count
+    		return count + 1;
     	}
+    	// recursive call with left and right subtrees
     	return findNodes(d - 1, count, node.getLeft()) + 
     			findNodes(d - 1, count, node.getRight());
     }
